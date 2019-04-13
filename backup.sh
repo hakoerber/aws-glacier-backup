@@ -4,13 +4,15 @@ set -o nounset
 set -o errexit
 set -o xtrace
 
-if [[ ! -e ./venv ]] ; then
-    python3 -m venv venv
-fi
-source ./venv/bin/activate
-command -v aws || pip install -r ./requirements.txt
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-export GNUPGHOME=./gpghome
+if [[ ! -e "${dir}/venv" ]] ; then
+    python3 -m venv "${dir}/venv"
+fi
+source "${dir}/venv/bin/activate"
+command -v aws || pip install -r "${dir}/requirements.txt"
+
+export GNUPGHOME="$(mktemp -d)"
 
 bucket="${1}" ; shift
 name="${1}" ; shift
@@ -33,7 +35,7 @@ tmpgpg() {
         "${@}"
 }
 
-tmpgpg --import ./pubkey.asc
+tmpgpg --import "${dir}/pubkey.asc"
 tar \
         --create \
         --verbose \
