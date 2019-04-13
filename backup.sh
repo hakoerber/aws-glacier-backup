@@ -43,11 +43,13 @@ find \
             -o \
             -regex "${backup_source}.*nextcloud/nextcloud.log" \
             -o \
-            -regex "${backup_source}.*registry/docker/registry/" \
+            -regex "${backup_source}.*registry/docker/registry" \
             -o \
             -regex "${backup_source}.*gogs/.*/gogs.log.*" \
             -o \
             -regex "${backup_source}.*gogs/gogs/data/sessions/.*" \
+            -o \
+            -regex "${backup_source}.*/cache/.*" \
         \) \
         -prune \
         -o \
