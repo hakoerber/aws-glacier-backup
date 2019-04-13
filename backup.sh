@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-source ./venv/bin/activate
-
 set -o nounset
 set -o errexit
 set -o xtrace
+
+if [[ ! -e ./venv ]] ; then
+    python3 -m venv venv
+fi
+source ./venv/bin/activate
+command -v aws || pip install -r ./requirements.txt
 
 export GNUPGHOME=./gpghome
 
