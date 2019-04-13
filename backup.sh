@@ -36,13 +36,32 @@ tmpgpg() {
 }
 
 tmpgpg --import "${dir}/pubkey.asc"
-tar \
+find \
+        "${backup_source}" \
+        \( \
+            -regex "${backup_source}.*nextcloud/.*/files_trashbin" \
+            -o \
+            -regex "${backup_source}.*nextcloud/nextcloud.log" \
+            -o \
+            -regex "${backup_source}.*registry/docker/registry/" \
+            -o \
+            -regex "${backup_source}.*gogs/.*/gogs.log.*" \
+            -o \
+            -regex "${backup_source}.*gogs/gogs/data/sessions/.*" \
+        \) \
+        -prune \
+        -o \
+        -print0 \
+    | tar \
         --create \
         --verbose \
         --gzip \
         --one-file-system \
+        --null \
+        --no-recursion \
+        --verbatim-files-from \
+        --files-from - \
         --file - \
-        "${backup_source}" \
     | tmpgpg \
         --output - \
         --encrypt \
