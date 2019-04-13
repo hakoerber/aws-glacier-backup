@@ -4,6 +4,11 @@ source ./venv/bin/activate
 
 set -o nounset
 set -o errexit
+set -o xtrace
+
+bucket="${1}" ; shift
+name="${1}" ; shift
+backup_source="${1}" ; shift
 
 cleanup() {
     rm -f ./keyring.tmp
@@ -28,12 +33,12 @@ tar \
         --xz \
         --one-file-system \
         --file - \
-        "${1}" \
+        "${backup_source}" \
     | tmpgpg \
         --output - \
         --encrypt \
-        --recipient hannes.koerber@haktec.de \
+        --recipient 0x078A167A8741BD30 \
     | aws s3 cp \
         --storage-class=DEEP_ARCHIVE \
         - \
-        s3://de-hkoerber-mycloud-backup/test.tar.xz.gpg
+        s3://${bucket}/${name}-$(date --utc -Iseconds).tar.xz.gpg
