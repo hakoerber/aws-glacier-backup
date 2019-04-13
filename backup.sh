@@ -5,12 +5,9 @@ source ./venv/bin/activate
 set -o nounset
 set -o errexit
 
-_GPG_HOMEDIR=./gpg-homedir.tmp
-
-mkdir -p "${_GPG_HOMEDIR}"
-chmod 700 "${_GPG_HOMEDIR}"
 cleanup() {
-    rm -rf "${_GPG_HOMEDIR}"
+    rm -f ./keyring.tmp
+    rm -f ./keyring.tmp~
 }
 
 trap cleanup EXIT
@@ -18,7 +15,7 @@ trap cleanup EXIT
 tmpgpg() {
     gpg \
         --batch \
-        --homedir "${_GPG_HOMEDIR}" \
+        --keyring ./keyring.tmp \
         --no-default-keyring \
         --no-options \
         "${@}"
