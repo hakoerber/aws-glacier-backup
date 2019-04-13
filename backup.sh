@@ -61,7 +61,6 @@ find \
         --one-file-system \
         --null \
         --no-recursion \
-        --verbatim-files-from \
         --files-from - \
         --file - \
     | tmpgpg \
