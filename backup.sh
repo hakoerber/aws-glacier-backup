@@ -41,4 +41,4 @@ tar \
     | aws s3 cp \
         --storage-class=DEEP_ARCHIVE \
         - \
-        s3://${bucket}/${name}-$(date --utc -Iseconds).tar.xz.gpg
+        "s3://${bucket}/${name}-$(date --utc -Iseconds).tar.xz.gpg"
