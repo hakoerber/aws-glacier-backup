@@ -57,8 +57,11 @@ find \
     | tar \
         --create \
         --verbose \
-        --gzip \
-        --one-file-system \
+        --no-auto-compress \
+        --ignore-failed-read \
+        --acls \
+        --selinux \
+        --xattrs \
         --null \
         --no-recursion \
         --files-from - \
