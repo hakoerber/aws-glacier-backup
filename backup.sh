@@ -66,6 +66,8 @@ find \
         --no-recursion \
         --files-from - \
         --file - \
+    | gzip \
+        --to-stdout \
     | tmpgpg \
         --output - \
         --encrypt \
