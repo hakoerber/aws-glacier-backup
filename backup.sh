@@ -89,6 +89,6 @@ for backup_dir in "${backup_sources[@]}" ; do
             | aws \
                 s3 cp \
                 - \
-                "s3://${bucket}/${name}-${timestamp}/${dir##%/}.tar.gz.gpg"
+                "s3://${bucket}/${name}-${timestamp}/${dir##/}.tar.gz.gpg"
     done
 done
