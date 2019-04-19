@@ -1,0 +1,6 @@
+- match: test/storage01/nextcloud/*
+- match: test/storage01/*
+  ignore:
+  - test/storage01/lost+found
+  - test/storage01/ignorepls
+  - test/storage01/test
