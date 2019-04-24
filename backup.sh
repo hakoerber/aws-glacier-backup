@@ -17,6 +17,8 @@ export GNUPGHOME="$(mktemp -d)"
 bucket="${1}" ; shift
 name="${1}" ; shift
 backup_sources_file="${1}" ; shift
+gpg_pubkey_file="${1}" ; shift
+gpg_pubkey_id="${1}" ; shift
 
 declare -a backup_sources
 readarray backup_sources < "${backup_sources_file}"
@@ -39,7 +41,7 @@ tmpgpg() {
         "${@}"
 }
 
-tmpgpg --import "${dir}/pubkey.asc"
+tmpgpg --import "${gpg_pubkey_file}"
 tmpgpg -k
 
 timestamp="$(date --utc -Iseconds)"
@@ -85,7 +87,7 @@ for backup_dir in "${backup_sources[@]}" ; do
             | tmpgpg \
                 --output - \
                 --encrypt \
-                --recipient 0x078A167A8741BD30 \
+                --recipient "${gpg_pubkey_id}" \
             | aws \
                 s3 cp \
                 - \
