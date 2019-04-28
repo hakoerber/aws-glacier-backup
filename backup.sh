@@ -16,12 +16,9 @@ export GNUPGHOME="$(mktemp -d)"
 
 bucket="${1}" ; shift
 name="${1}" ; shift
-backup_sources_file="${1}" ; shift
+filelist_script="${1}" ; shift
 gpg_pubkey_file="${1}" ; shift
 gpg_pubkey_id="${1}" ; shift
-
-declare -a backup_sources
-readarray backup_sources < "${backup_sources_file}"
 
 install --directory --owner $(id -u) --group $(id -g) --mode 700 "${GNUPGHOME}"
 
@@ -46,51 +43,32 @@ tmpgpg -k
 
 timestamp="$(date --utc -Iseconds)"
 
-for backup_dir in "${backup_sources[@]}" ; do
-    backup_dir_expanded=($(eval "echo $backup_dir"))
-    for dir in "${backup_dir_expanded[@]}" ; do
-        echo $dir
-        set -x
-        find \
-                "${dir[@]}" \
-                \( \
-                    -regex "${dir}.*/files_trashbin" \
-                    -o \
-                    -regex "${dir}.*nextcloud.log.*" \
-                    -o \
-                    -regex "${dir}.*registry/docker/registry" \
-                    -o \
-                    -regex "${dir}.*/gogs.log.*" \
-                    -o \
-                    -regex "${dir}.*gogs/data/sessions/.*" \
-                    -o \
-                    -regex "${dir}.*/cache/.*" \
-                \) \
-                -prune \
-                -o \
-                -print0 \
-            | tar \
-                --create \
-                --verbose \
-                --no-auto-compress \
-                --ignore-failed-read \
-                --acls \
-                --selinux \
-                --xattrs \
-                --null \
-                --force-local \
-                --no-recursion \
-                --files-from - \
-                --file - \
-            | gzip \
-                --to-stdout \
-            | tmpgpg \
-                --output - \
-                --encrypt \
-                --recipient "${gpg_pubkey_id}" \
-            | aws \
-                s3 cp \
-                - \
-                "s3://${bucket}/${name}-${timestamp}/${dir##/}.tar.gz.gpg"
-    done
+"${filelist_script}" | while read filelist ; do
+    filepath="$(echo "$filelist" | cut -d ':' -f 1)"
+    fifo="$(echo "$filelist" | cut -d ':' -f 2)"
+    mkdir -p "$(dirname "${filepath}")"
+    echo "$fifo"
+    <"$fifo" tar \
+        --create \
+        --verbose \
+        --no-auto-compress \
+        --ignore-failed-read \
+        --acls \
+        --selinux \
+        --xattrs \
+        --null \
+        --force-local \
+        --no-recursion \
+        --files-from - \
+        --file - \
+    | gzip \
+        --to-stdout \
+    | tmpgpg \
+        --output - \
+        --encrypt \
+        --recipient "${gpg_pubkey_id}" \
+    | aws \
+        s3 cp \
+        - \
+        "s3://${bucket}/${name}-${timestamp}/${filepath}.tar.gz.gpg"
 done
