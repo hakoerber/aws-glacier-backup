@@ -71,5 +71,5 @@ timestamp="$(date --utc -Iseconds)"
         s3 cp \
         --storage-class DEEP_ARCHIVE \
         - \
-        "s3://${bucket}/${name}-${timestamp}/${filepath}.tar.gz.gpg"
+        "s3://${bucket}/${name}-${timestamp}/${filepath##*(/)}.tar.gz.gpg"
 done
