@@ -4,6 +4,8 @@ set -o nounset
 set -o errexit
 set -o xtrace
 
+shopt -s extglob
+
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 if [[ ! -e "${dir}/venv" ]] ; then
@@ -74,5 +76,5 @@ timestamp="$(date --utc -Iseconds)"
         s3 cp \
         --storage-class DEEP_ARCHIVE \
         - \
-        "s3://${bucket}/${name}-${timestamp}/${filepath##*(/)}.tar.gz.gpg"
+        "s3://${bucket}/${name}-${timestamp}/${filepath##+(/)}.tar.gz.gpg"
 done
