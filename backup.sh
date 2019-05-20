@@ -67,6 +67,8 @@ timestamp="$(date --utc -Iseconds)"
         --output - \
         --encrypt \
         --compress-algo none \
+        --cipher-algo AES256 \
+        --digest-algo SHA256 \
         --recipient "${gpg_pubkey_id}" \
     | aws \
         s3 cp \
