@@ -69,6 +69,7 @@ timestamp="$(date --utc -Iseconds)"
         --recipient "${gpg_pubkey_id}" \
     | aws \
         s3 cp \
+        --storage-class DEEP_ARCHIVE \
         - \
         "s3://${bucket}/${name}-${timestamp}/${filepath}.tar.gz.gpg"
 done
