@@ -66,6 +66,7 @@ timestamp="$(date --utc -Iseconds)"
     | tmpgpg \
         --output - \
         --encrypt \
+        --compress-algo none \
         --recipient "${gpg_pubkey_id}" \
     | aws \
         s3 cp \
