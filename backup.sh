@@ -75,6 +75,13 @@ timestamp="$(date --utc -Iseconds)"
     | aws \
         s3 cp \
         --storage-class DEEP_ARCHIVE \
+        # specify max object size of 5TB here. This makes aws-cli use a bigger
+        # chunk size for the multipart upload. Otherwise, objects >5GB cannot
+        # be uploaded because the max chunk count is 1e4
+        #
+        # It's very hacky because it makes uploads of small files more
+        # inefficient
+        --expected-size=$(5*1000*1000*1000) \
         - \
         "s3://${bucket}/${name}-${timestamp}/${filepath##+(/)}.tar.gz.gpg"
 done
